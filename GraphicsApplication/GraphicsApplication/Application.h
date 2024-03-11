@@ -24,12 +24,16 @@ public:
     void draw();
     void shutdown();
 
+    void setBackgroundColour(float r, float g, float b) { m_backgroundColour = vec4(r, g, b, 1); }
+    int getWindowWidth() { return m_windowWidth; }
+    int getWindowHeight() { return m_windowHeight; }
+
 protected:
     glm::mat4 m_view;
     glm::mat4 m_projection;
 
     GLFWwindow* m_window;
-    const vec4 m_backgroundColour = vec4(0.25f, 0.25f, 0.25f, 1);
+    vec4 m_backgroundColour = vec4(0.25f, 0.25f, 0.25f, 1);
     const int m_windowWidth = 1280;
     const int m_windowHeight = 720;
 };

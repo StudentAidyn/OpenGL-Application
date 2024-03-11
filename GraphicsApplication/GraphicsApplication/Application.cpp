@@ -75,6 +75,21 @@ void Application::draw() {
 
     Gizmos::draw(m_projection * m_view);
 
+    /// IN THE TUTORIAL FOR GRAPHICS RENDERING GEOMETRY-
+    /// IT STATES TO PLACE YOUR M_SHADER WITHIN APPLICATION3D BUT STATES TO PLACE IT WITHIN HERE?
+    /// SOME INCONSISTENCIES TO LOOK THROUGH WITH SHANE NON-THE LESS
+
+
+    //// bind shader
+    //m_shader.bind();
+
+    //// bind transform
+    //auto pvm = m_projection * m_view * m_quadTransform;
+    //m_shader.bindUniform("ProjectionViewModel", pvm);
+
+    //// draw quad
+    //m_quadMesh.draw();
+
     glfwSwapBuffers(m_window);
     glfwPollEvents();
 }
