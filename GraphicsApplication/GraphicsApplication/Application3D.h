@@ -1,28 +1,25 @@
 #pragma once
-#include "glad.h"
+//#include "glad.h"
 #include "Application.h"
-#include "Mesh.h"
-#include "Shader.h"
+
 
 class Application3D : public Application {
 public:
 
     Application3D();
-    virtual ~Application3D();
+    ~Application3D();
 
-    virtual bool startup();
-    virtual void shutdown();
+    bool startup() override;
+    void shutdown() override;
 
-    virtual void update(float deltaTime);
-    virtual void draw();
+    bool update() override;
+    void draw()override;
 
 protected:
 
-    glm::mat4   m_viewMatrix;
-    glm::mat4   m_projectionMatrix;
-
-    aie::ShaderProgram   m_shader;
+    aie::ShaderProgram* m_shader;
     Mesh    m_quadMesh;
     glm::mat4   m_quadTransform;
+
 };
 

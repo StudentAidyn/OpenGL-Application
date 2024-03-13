@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Shaders">
+    <Filter Include="Source Files\shaders">
       <UniqueIdentifier>{1b114156-64e7-4f22-a233-3fdd05790234}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -59,13 +59,16 @@
     <ClInclude Include="Application3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\bin\Shaders\simple.frag.txt">
-      <Filter>Source Files\Shaders</Filter>
-    </Text>
-    <Text Include="..\bin\Shaders\simple.vert.txt">
-      <Filter>Source Files\Shaders</Filter>
-    </Text>
+    <None Include="..\bin\Shaders\simple.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\bin\Shaders\simple.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

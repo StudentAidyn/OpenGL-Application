@@ -1,9 +1,10 @@
 #include "glad.h"
 #include "Application.h"
+#include "Application3D.h"
 
 int main()
 {
-    Application* app = new Application();
+    Application3D* app = new Application3D();
     if (app->startup() == true) {
         while (app->update() == true)
             app->draw();
