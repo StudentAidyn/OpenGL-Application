@@ -19,6 +19,7 @@ protected:
 
     aie::ShaderProgram* m_shader;
     Mesh    m_quadMesh;
+    // controls the TRNASFORMS of the mesh (position, size, rotation, __ ?)
     glm::mat4   m_quadTransform;
 
 };

@@ -16,6 +16,9 @@ public:
 		glm::vec2 texCoord;
 	};
 
+	// mesh initializer
+	void initialise(unsigned int vertexCount, const Vertex* vertices, unsigned int indexCount = 0, unsigned int* indices = nullptr);
+
 	// initializes a quad shape
 	void initialiseQuad();
 	// the to screen function
