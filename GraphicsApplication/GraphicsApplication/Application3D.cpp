@@ -55,131 +55,18 @@ bool Application3D::startup() {
         return false;
     }
 
-	//// define 6 vertices for 2 triangles
-	//Mesh::Vertex vertices[6];
-	//vertices[0].position = { -0.5f, 0, 0.5f, 1 };
-	//vertices[1].position = { 0.5f, 0, 0.5f, 1 };
-	//vertices[2].position = { -0.5f, 0, -0.5f, 1 };
-
-	//vertices[3].position = { -0.5f, 0, -0.5f, 1 };
-	//vertices[4].position = { 0.5f, 0, 0.5f, 1 };
-	//vertices[5].position = { 0.5f, 0, -0.5f, 1 };
-
-	//m_quadMesh.initialise(6, vertices);
-
-	// define 4 vertices for 2 triangles
-	Mesh::Vertex vertices2[4];
-	vertices2[0].position = { -0.5f, 0, 0.5f, 1 };
-	vertices2[1].position = { 0.5f, 0, 0.5f, 1 };
-	vertices2[2].position = { -0.5f, 0, -0.5f, 1 };
-	vertices2[3].position = { 0.5f, 0, -0.5f, 1 };
-
-	unsigned int indices[6] = { 0, 1, 2, 2, 1, 3 };
-
-	m_quadMesh.initialise(4, vertices2, 6, indices);
+	m_quadMesh.initialiseFromFile("../models/Owls.obj");
 
     // make the quad 10 units wide
     m_quadTransform = {
           1,0,0,0,
-          1,0,0,0,
+          0,1,0,0,
           0,0,1,0,
           0,0,0,1 };
 
     return true;
 }
 
-//bool Application3D::startup()
-//{
-//	setBackgroundColour(0.25f, 0.25f, 0.25f);
-//
-//
-//#pragma region Added in from Application.cpp
-//
-//
-//	/// Initialize GLFW
-//	if (glfwInit() == false)
-//	{
-//		return -1;
-//	}
-//
-//	/// Create a window
-//	m_window = glfwCreateWindow(getWindowWidth(), getWindowWidth(), "Computer Graphics", nullptr, nullptr);
-//
-//	/// Check if the window was created
-//	if (m_window == nullptr)
-//	{
-//		glfwTerminate();
-//		return -1;
-//	}
-//	glfwMakeContextCurrent(m_window);
-//
-//	if (!gladLoadGL())
-//	{
-//		glfwDestroyWindow(m_window);
-//		glfwTerminate();
-//		return -3;
-//	}
-//
-//#pragma endregion
-//
-//
-//
-//	/// initialize gizmo primitive counts
-//	Gizmos::create(10000, 10000, 10000, 10000);
-//
-//	/// set up the camera
-//	m_view = glm::lookAt(vec3(10), vec3(0), vec3(0, 1, 0));
-//	m_projection = glm::perspective(glm::pi<float>() * 0.25f, (float)(getWindowWidth() / getWindowHeight()), 0.1f, 1000.f);
-//
-//	m_shader->loadShader(aie::eShaderStage::VERTEX, "./shaders/simple.vert");
-//	m_shader->loadShader(aie::eShaderStage::FRAGMENT, "./shaders/simple.frag");
-//
-//	if (m_shader->link() == false)
-//	{
-//		printf("Shader Error: %s\n", m_shader->getLastError());
-//		return false;
-//	}
-//
-//	//m_quadMesh.initialiseQuad();
-//
-//	///make the quad 10 units wide
-//	m_quadTransform = {
-//		10,0, 0, 0,
-//		0, 10, 0, 0,
-//		0, 0, 10, 0,
-//		0, 0, 0, 1
-//	};
-//
-//
-//	// define 6 vertices for 2 triangles
-//	/*Mesh::Vertex vertices[6];
-//	vertices[0].position = { -0.5f, 0, 0.5f, 1 };
-//	vertices[1].position = { 0.5f, 0, 0.5f, 1 };
-//	vertices[2].position = { -0.5f, 0, -0.5f, 1 };
-//
-//	vertices[3].position = { -0.5f, 0, -0.5f, 1 };
-//	vertices[4].position = { 0.5f, 0, 0.5f, 1 };
-//	vertices[5].position = { 0.5f, 0, -0.5f, 1 };*/
-//
-//
-//
-//	//m_quadMesh.initialise(6, vertices);
-//
-//
-//	// define 4 vertices for 2 triangles
-//	Mesh::Vertex vertices[4];
-//	vertices[0].position = { -0.5f, 0, 0.5f, 1 };
-//	vertices[1].position = { 0.5f, 0, 0.5f, 1 };
-//	vertices[2].position = { -0.5f, 0, -0.5f, 1 };
-//	vertices[3].position = { 0.5f, 0, -0.5f, 1 };
-//
-//	unsigned int indices[6] = { 0, 1, 2, 2, 1, 3 };
-//
-//	//m_quadMesh.initialise(4, vertices, 6, indices);
-//
-//
-//	return true;
-//}
 
 bool Application3D::update() {
     return (glfwWindowShouldClose(m_window) == false && glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS);

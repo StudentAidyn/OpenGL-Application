@@ -19,6 +19,9 @@ public:
 	// mesh initializer
 	void initialise(unsigned int vertexCount, const Vertex* vertices, unsigned int indexCount = 0, unsigned int* indices = nullptr);
 
+	// initialises using an (obj)ect file
+	void initialiseFromFile(const char* filename);
+
 	// initializes a quad shape
 	void initialiseQuad();
 	// the to screen function

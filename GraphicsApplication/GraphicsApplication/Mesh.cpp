@@ -1,6 +1,9 @@
 #include "glad.h"
 #include "Mesh.h"
-//#include "gl_core_4_4.h"
+#include <assimp/scene.h>
+#include <assimp/cimport.h>
+#include <vector>
+//#include "gl_core_4_4.h" <- delete this >:(
 
 
 
@@ -103,6 +106,46 @@ void Mesh::initialise(unsigned int vertexCount, const Vertex* vertices, unsigned
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+// mesh initialiser that takes a file name, it uses .[obj]ect files
+void Mesh::initialiseFromFile(const char* filename)
+{
+    // read vertices from the model
+    const aiScene* scene = aiImportFile(filename, 0);
+    // just use the first mesh we find for now
+    aiMesh* mesh = scene->mMeshes[0];
+
+
+    // extract indicies from the first mesh
+    int numFaces = mesh->mNumFaces;
+    std::vector<unsigned int> indices;
+    for (int i = 0; i < numFaces; i++)
+    {
+        // uses the array within aiMesh an outsourced library that can handle elements of rendering.
+        indices.push_back(mesh->mFaces[i].mIndices[0]);
+        indices.push_back(mesh->mFaces[i].mIndices[2]);
+        indices.push_back(mesh->mFaces[i].mIndices[1]);
+        // generate a second triangle for quads
+        if (mesh->mFaces[i].mNumIndices == 4)
+        {
+            indices.push_back(mesh->mFaces[i].mIndices[0]);
+            indices.push_back(mesh->mFaces[i].mIndices[3]);
+            indices.push_back(mesh->mFaces[i].mIndices[2]);
+        }
+    }
+
+    // extract vertex data
+    int numV = mesh->mNumVertices;
+    Vertex* vertices = new Vertex[numV];
+    for (int i = 0; i < numV; i++)
+    {
+        vertices[i].position = glm::vec4(mesh->mVertices[i].x,
+            mesh->mVertices[i].y, mesh->mVertices[i].z, 1);
+        // TODO, normals and UVs
+    }
+    // calls the mesh initialiser passing in the vertices and indices found
+    initialise(numV, vertices, indices.size(), indices.data());
+    delete[] vertices;
+}
 
 void Mesh::draw() {
     glBindVertexArray(vao);
