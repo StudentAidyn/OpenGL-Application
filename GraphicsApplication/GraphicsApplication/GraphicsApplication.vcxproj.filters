@@ -36,10 +36,10 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_core_4_4.c">
+    <ClCompile Include="Application3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Application3D.cpp">
+    <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,12 +62,21 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\Shaders\simple.frag">
       <Filter>Source Files\shaders</Filter>
     </None>
     <None Include="..\bin\Shaders\simple.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\bin\shaders\phong.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\bin\shaders\phong.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
   </ItemGroup>

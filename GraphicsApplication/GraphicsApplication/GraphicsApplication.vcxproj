@@ -157,9 +157,9 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Application3D.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Gizmos.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="gl_core_4_4.c" />
     <ClCompile Include="GraphicsApplication.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -167,12 +167,15 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Application3D.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Gizmos.h" />
     <ClInclude Include="glad.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\bin\shaders\phong.frag" />
+    <None Include="..\bin\shaders\phong.vert" />
     <None Include="..\bin\Shaders\simple.frag" />
     <None Include="..\bin\Shaders\simple.vert" />
   </ItemGroup>

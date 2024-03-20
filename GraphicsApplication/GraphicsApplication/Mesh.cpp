@@ -38,12 +38,25 @@ void Mesh::initialiseQuad(){
     vertices[4].position = { 0.5f, 0, 0.5f, 1 };
     vertices[5].position = { 0.5f, 0, -0.5f, 1 };
 
+    vertices[0].normal = { 0, 1, 0, 0 };
+    vertices[1].normal = { 0, 1, 0, 0 };
+    vertices[2].normal = { 0, 1, 0, 0 };
+    vertices[3].normal = { 0, 1, 0, 0 };
+    vertices[4].normal = { 0, 1, 0, 0 };
+    vertices[5].normal = { 0, 1, 0, 0 };
+
+
     // fill vertex buffer with defined verticies with the size of a vertex in bytes
     glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(Vertex), vertices, GL_STATIC_DRAW);
 
-    // enable first element as position
+    // enabling first element as position
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
+    // enable second element as normal
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE,
+        sizeof(Vertex), (void*)16);
 
     // unbind buffers
     glBindVertexArray(0);
@@ -55,7 +68,7 @@ void Mesh::initialiseQuad(){
 
 
 // Mesh Initialiser
-void Mesh::initialise(unsigned int vertexCount, const Vertex* vertices, unsigned int indexCount /* = 0*/, unsigned int* indices /*= nullptr*/) {
+void Mesh::initialise(unsigned int vertexCount, const Vertex* vertices, unsigned int indexCount /* = 0*/, unsigned int* indices /*= nullptr*/)   {
     assert(vao == 0);
 
     // generate buffers for vertex buffer object and vertex array object
@@ -64,7 +77,6 @@ void Mesh::initialise(unsigned int vertexCount, const Vertex* vertices, unsigned
 
     // bind vertex array (a mesh wrapper)
     glBindVertexArray(vao);
-
 
     /*  glBindBuffer assigns an unsigned int to the buffer then
         glBufferData assigns the data into the corresponding buffer 
@@ -83,6 +95,10 @@ void Mesh::initialise(unsigned int vertexCount, const Vertex* vertices, unsigned
       glEnableVertexAttribArray(0);
       glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
+      // enable second element as normal
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 4, GL_FLOAT, GL_TRUE,
+          sizeof(Vertex), (void*)16);
 
     // check for indicies and bind indices if there are any
     if (indexCount != 0) { // indexCount is an unsigned int (uint) there for it does not need a greater than check
@@ -140,7 +156,8 @@ void Mesh::initialiseFromFile(const char* filename)
     {
         vertices[i].position = glm::vec4(mesh->mVertices[i].x,
             mesh->mVertices[i].y, mesh->mVertices[i].z, 1);
-        // TODO, normals and UVs
+        vertices[i].normal = glm::vec4(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, 0);
+        // TODO UVs
     }
     // calls the mesh initialiser passing in the vertices and indices found
     initialise(numV, vertices, indices.size(), indices.data());

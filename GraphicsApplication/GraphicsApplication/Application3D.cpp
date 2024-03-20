@@ -1,13 +1,11 @@
 #include "glad.h"
 #include "Application3D.h"
+Application* Application::s_instance = nullptr;
 
 Application3D::Application3D() {
-	m_shader = new aie::ShaderProgram;
 }
 
 Application3D::~Application3D() {
-	delete m_shader;
-	m_shader = nullptr;
 }
 
 bool Application3D::startup() {
@@ -39,23 +37,32 @@ bool Application3D::startup() {
 
 	Gizmos::create(10000, 10000, 1000, 0);
 
-	m_view = glm::lookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
-	m_projection = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.f, 0.1f, 1000.f);
+	s_instance = this;
+	glfwSetCursorPosCallback(m_window, &Application::SetMousePosition);
 
 	glClearColor(m_backgroundColour.x, m_backgroundColour.y, m_backgroundColour.z, m_backgroundColour.w);
 	glEnable(GL_DEPTH_TEST); // enables the depth buffer
 
 	printf("GL: %i.%i\n", GLVersion.major, GLVersion.minor);
 
-    m_shader->loadShader(aie::eShaderStage::VERTEX, "./shaders/simple.vert");
-    m_shader->loadShader(aie::eShaderStage::FRAGMENT, "../bin/shaders/simple.frag");
+    m_shader.loadShader(aie::eShaderStage::VERTEX, "./shaders/simple.vert");
+    m_shader.loadShader(aie::eShaderStage::FRAGMENT, "./shaders/simple.frag");
 
-    if (m_shader->link() == false) {
-        printf("Shader Error: %s\n", m_shader->getLastError());
-        return false;
-    }
+	if (m_shader.link() == false) {
+		printf("Shader Error: %s\n", m_shader.getLastError());
+		return false;
+	}
+
+	m_phongShader.loadShader(aie::eShaderStage::VERTEX, "./shaders/phong.vert");
+	m_phongShader.loadShader(aie::eShaderStage::FRAGMENT, "./shaders/phong.frag");
+
+	if (m_phongShader.link() == false) {
+		printf("Shader Error: %s\n", m_phongShader.getLastError());
+		return false;
+	}
 
 	m_quadMesh.initialiseFromFile("../models/Owls.obj");
+	//m_quadMesh.initialiseQuad();	
 
     // make the quad 10 units wide
     m_quadTransform = {
@@ -64,11 +71,28 @@ bool Application3D::startup() {
           0,0,1,0,
           0,0,0,1 };
 
+	m_light.colour = { 1, 1, 0 };
+	m_ambientLight = { 0.25f, 0.25f, 0.25f };
+
+
     return true;
 }
 
 
 bool Application3D::update() {
+
+
+
+	m_camera.update(0.1f, m_window);
+
+	m_lastMousePosition = m_mousePosition;
+
+	// query time since application started
+	float time = glfwGetTime();
+	// rotate light
+	m_light.direction = glm::normalize(vec3(glm::cos(time * 2),
+		glm::sin(time * 0.5), 0));
+
     return (glfwWindowShouldClose(m_window) == false && glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
 }
 
@@ -79,6 +103,37 @@ void Application3D::draw()
 	Gizmos::clear();
 
 	Gizmos::addTransform(glm::mat4(1));
+
+
+
+	glm::mat4 pv = m_camera.getProjectionMatrix(getWindowWidth(), getWindowHeight()) * m_camera.getViewMatrix();
+
+	//m_shader.bind();
+
+	//// bind transform
+	//auto pvm = pv * m_quadTransform;
+	//m_shader.bindUniform("ProjectionViewModel", pvm);
+
+
+
+	// bind shader
+	m_phongShader.bind();
+
+	// bind light
+	m_phongShader.bindUniform("AmbientColour", m_ambientLight);
+	m_phongShader.bindUniform("LightColour", m_light.colour);
+	m_phongShader.bindUniform("LightDirection", m_light.direction);
+
+
+	// bind transform
+	auto pvm = pv * m_quadTransform;
+	m_phongShader.bindUniform("ProjectionViewModel", pvm);
+
+	// bind transforms for lighting
+	m_phongShader.bindUniform("ModelMatrix", m_quadTransform);
+
+	// draw quad
+	m_quadMesh.draw();
 
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
@@ -93,18 +148,7 @@ void Application3D::draw()
 			i == 10 ? white : black);
 	}
 
-	Gizmos::draw(m_projection * m_view);
-
-
-	// bind shader
-	m_shader->bind();
-
-	// bind transform
-	auto pvm = m_projection * m_view * m_quadTransform;
-	m_shader->bindUniform("ProjectionViewModel", pvm);
-
-	// draw quad
-	m_quadMesh.draw();
+	Gizmos::draw(pv);
 
 	glfwSwapBuffers(m_window);
 	glfwPollEvents();
