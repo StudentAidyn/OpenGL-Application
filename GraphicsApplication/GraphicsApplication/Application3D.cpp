@@ -1,5 +1,7 @@
 #include "glad.h"
 #include "Application3D.h"
+#include "imgui_glfw3.h"
+
 Application* Application::s_instance = nullptr;
 
 Application3D::Application3D() {
@@ -36,6 +38,9 @@ bool Application3D::startup() {
 	}
 
 	Gizmos::create(10000, 10000, 1000, 0);
+
+	// initialize the GUI components
+	aie::ImGui_Init(m_window, true);
 
 	s_instance = this;
 	glfwSetCursorPosCallback(m_window, &Application::SetMousePosition);
@@ -82,17 +87,16 @@ bool Application3D::startup() {
 
 bool Application3D::update() {
 
+	aie::ImGui_NewFrame();
 
-
-	m_camera.update(0.1f, m_window);
+	ImGui::Begin("Light Settings");
+	ImGui::DragFloat3("Sunlight Direction", &m_light.direction[0], 0.1f, -1.0f, 1.0f);
+	ImGui::DragFloat3("Sunlight Colour", &m_light.colour[0], 0.1f, 0.0f, 2.0f);
+	ImGui::End();
+	
+	m_camera.update(0.1f, m_window); // delta time, current window
 
 	m_lastMousePosition = m_mousePosition;
-
-	// query time since application started
-	float time = glfwGetTime();
-	// rotate light
-	m_light.direction = glm::normalize(vec3(glm::cos(time * 2),
-		glm::sin(time * 1.5f), 0));
 
     return (glfwWindowShouldClose(m_window) == false && glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
 }
@@ -154,11 +158,15 @@ void Application3D::draw()
 
 	Gizmos::draw(pv);
 
+	// render the GUI last so it overlays
+	ImGui::Render();
+
 	glfwSwapBuffers(m_window);
 	glfwPollEvents();
 }
 
 void Application3D::shutdown() {
+	aie::ImGui_Shutdown();
 	Gizmos::destroy();
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
