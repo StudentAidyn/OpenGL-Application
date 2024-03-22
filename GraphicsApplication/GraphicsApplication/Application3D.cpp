@@ -45,13 +45,13 @@ bool Application3D::startup() {
 
 	printf("GL: %i.%i\n", GLVersion.major, GLVersion.minor);
 
-    m_shader.loadShader(aie::eShaderStage::VERTEX, "./shaders/simple.vert");
-    m_shader.loadShader(aie::eShaderStage::FRAGMENT, "./shaders/simple.frag");
+ //   m_shader.loadShader(aie::eShaderStage::VERTEX, "./shaders/simple.vert");
+ //   m_shader.loadShader(aie::eShaderStage::FRAGMENT, "./shaders/simple.frag");
 
-	if (m_shader.link() == false) {
-		printf("Shader Error: %s\n", m_shader.getLastError());
-		return false;
-	}
+	//if (m_shader.link() == false) {
+	//	printf("Shader Error: %s\n", m_shader.getLastError());
+	//	return false;
+	//}
 
 	m_phongShader.loadShader(aie::eShaderStage::VERTEX, "./shaders/phong.vert");
 	m_phongShader.loadShader(aie::eShaderStage::FRAGMENT, "./shaders/phong.frag");
@@ -62,6 +62,7 @@ bool Application3D::startup() {
 	}
 
 	m_quadMesh.initialiseFromFile("../models/Owls.obj");
+	m_quadMesh.loadMaterial("../models/Buddha.mtl");
 	//m_quadMesh.initialiseQuad();	
 
     // make the quad 10 units wide
@@ -71,7 +72,7 @@ bool Application3D::startup() {
           0,0,1,0,
           0,0,0,1 };
 
-	m_light.colour = { 1, 1, 0 };
+	m_light.colour = { 1,1,1 };
 	m_ambientLight = { 0.25f, 0.25f, 0.25f };
 
 
@@ -91,7 +92,7 @@ bool Application3D::update() {
 	float time = glfwGetTime();
 	// rotate light
 	m_light.direction = glm::normalize(vec3(glm::cos(time * 2),
-		glm::sin(time * 0.5), 0));
+		glm::sin(time * 1.5f), 0));
 
     return (glfwWindowShouldClose(m_window) == false && glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
 }
@@ -124,13 +125,16 @@ void Application3D::draw()
 	m_phongShader.bindUniform("LightColour", m_light.colour);
 	m_phongShader.bindUniform("LightDirection", m_light.direction);
 
-
+	m_phongShader.bindUniform("cameraPosition", vec3(glm::inverse(m_camera.getViewMatrix())[3]));
+	
 	// bind transform
 	auto pvm = pv * m_quadTransform;
 	m_phongShader.bindUniform("ProjectionViewModel", pvm);
 
 	// bind transforms for lighting
 	m_phongShader.bindUniform("ModelMatrix", m_quadTransform);
+
+	m_quadMesh.applyMaterial(&m_phongShader);
 
 	// draw quad
 	m_quadMesh.draw();

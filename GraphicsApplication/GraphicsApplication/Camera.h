@@ -14,6 +14,7 @@ public:
 
 	/// Camera update function, changes the current "position" and "orientation" of the camera
 	void update(float deltaTime, GLFWwindow* window);
+	glm::vec3 getPosition() { return glm::vec3(glm::inverse(getViewMatrix())[3]); }
 
 private:
 	/// Theta is the orientation across the x-axis

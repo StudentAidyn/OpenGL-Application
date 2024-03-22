@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+namespace aie { class ShaderProgram; }
+
 class Mesh
 {
 public: 
@@ -27,6 +29,10 @@ public:
 	// the to screen function
 	virtual void draw();
 
+	void loadMaterial(const char* fileName);
+
+	void applyMaterial(aie::ShaderProgram* shader);
+
 protected:
 	// total tris being created
 	unsigned int triCount;
@@ -34,6 +40,11 @@ protected:
 	// vao -> Vertex Array Object - "...which acts as a sort of wrapper for a mesh, combining vbos andan  ibos", AIE: Graphics Rendering Geometry Tutorial
 	// vbo -> Vertex Buffer Object
 	// ibo -> Index Buffer Object
+
+	glm::vec3 Ka; // ambient colour of the surface
+	glm::vec3 Kd; // diffuse colour of the surface
+	glm::vec3 Ks; // specular colour of the surface
+	float specularPower; // tightness of specular highlights
 
 };
 

@@ -3,7 +3,10 @@
 #include <assimp/scene.h>
 #include <assimp/cimport.h>
 #include <vector>
-//#include "gl_core_4_4.h" <- delete this >:(
+#include "Shader.h"
+#include <iostream> // standard library
+#include <fstream> // file reading
+#include <sstream> // string stream
 
 
 
@@ -162,6 +165,37 @@ void Mesh::initialiseFromFile(const char* filename)
     // calls the mesh initialiser passing in the vertices and indices found
     initialise(numV, vertices, indices.size(), indices.data());
     delete[] vertices;
+}
+
+void Mesh::loadMaterial(const char* fileName)
+{
+    std::fstream file(fileName, std::ios::in);
+    std::string line;
+    std::string header;
+    char buffer[256];
+    while (!file.eof())
+    {
+        file.getline(buffer, 256);
+        line = buffer;
+        std::stringstream ss(line,
+            std::stringstream::in | std::stringstream::out);
+        if (line.find("Ka") == 0)
+            ss >> header >> Ka.x >> Ka.y >> Ka.z;
+        else if (line.find("Ks") == 0)
+            ss >> header >> Ks.x >> Ks.y >> Ks.z;
+        else if (line.find("Kd") == 0)
+            ss >> header >> Kd.x >> Kd.y >> Kd.z;
+        else if (line.find("Ns") == 0)
+            ss >> header >> specularPower;
+    }
+}
+
+void Mesh::applyMaterial(aie::ShaderProgram* shader)
+{
+    shader->bindUniform("Ka", Ka);
+    shader->bindUniform("Kd", Kd);
+    shader->bindUniform("Ks", Ks);
+    shader->bindUniform("specularPower", specularPower);
 }
 
 void Mesh::draw() {
