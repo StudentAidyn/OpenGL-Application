@@ -3,6 +3,7 @@
 
 in vec4 vPosition;
 in vec3 vNormal;
+in vec2 vTexCoords;
 
 uniform vec3 cameraPosition;
 
@@ -14,6 +15,8 @@ uniform float specularPower; // material specular power
 uniform vec3 AmbientColour; // ambient light colour
 uniform vec3 LightColour; // light colour
 uniform vec3 LightDirection;
+
+uniform sampler2D diffuseTex;
 
 out vec4 FragColour;
 
@@ -32,9 +35,11 @@ void main() {
 	// calculate specular term
 	float specularTerm = pow( max( 0, dot( R, V ) ), specularPower );
 
+	vec3 textureColour = texture(diffuseTex, vTexCoords).rgb;
+
 	// calculate each colour property
-	vec3 ambient = AmbientColour * Ka;
-	vec3 diffuse = LightColour * Kd * lambertTerm;
+	vec3 ambient = AmbientColour * Ka * textureColour;
+	vec3 diffuse = LightColour * Kd * lambertTerm * textureColour;
 	vec3 specular = LightColour * Ks * specularTerm;
 	
 	// output lambert as grayscale

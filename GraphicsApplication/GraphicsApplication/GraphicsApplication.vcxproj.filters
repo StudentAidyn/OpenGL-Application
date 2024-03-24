@@ -54,6 +54,9 @@
     <ClCompile Include="..\dep\imgui\imgui_draw.cpp">
       <Filter>Source Files\ImGUI</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Gizmos.h">
@@ -101,6 +104,12 @@
       <Filter>Source Files\shaders</Filter>
     </None>
     <None Include="..\bin\shaders\phong.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\bin\shaders\normalmap.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\bin\shaders\normalmap.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
   </ItemGroup>

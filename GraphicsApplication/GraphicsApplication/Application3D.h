@@ -2,6 +2,7 @@
 //#include "glad.h"
 #include "Application.h"
 #include "Shader.h"
+#include "Texture.h"
 
 
 class Application3D : public Application {
@@ -20,13 +21,17 @@ protected:
 
     aie::ShaderProgram m_shader;
     aie::ShaderProgram m_phongShader;
+    aie::ShaderProgram m_normalMapShader;
 
+    aie::Texture m_gridTexture;
+    // Mesh Object
     Mesh    m_quadMesh;
-    // controls the TRANSFORMS of the mesh (position, size, rotation, __ ?)
+    // controls the TRANSFORMS of the mesh (position, size, rotation, ?SCALE? ?)
     glm::mat4   m_quadTransform;
 
-    Mesh m_bunnyMesh;
-    glm::mat4 m_bunnyTransform;
+    aie::Texture m_altTexture;
+    Mesh m_altMesh;
+    glm::mat4 m_altTransform;
 
     struct Light {
         glm::vec3 direction;

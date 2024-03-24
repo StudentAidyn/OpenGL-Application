@@ -50,25 +50,40 @@ bool Application3D::startup() {
 
 	printf("GL: %i.%i\n", GLVersion.major, GLVersion.minor);
 
- //   m_shader.loadShader(aie::eShaderStage::VERTEX, "./shaders/simple.vert");
- //   m_shader.loadShader(aie::eShaderStage::FRAGMENT, "./shaders/simple.frag");
-
-	//if (m_shader.link() == false) {
-	//	printf("Shader Error: %s\n", m_shader.getLastError());
-	//	return false;
-	//}
-
-	m_phongShader.loadShader(aie::eShaderStage::VERTEX, "./shaders/phong.vert");
-	m_phongShader.loadShader(aie::eShaderStage::FRAGMENT, "./shaders/phong.frag");
+	m_phongShader.loadShader(aie::eShaderStage::VERTEX, "./shaders/normalmap.vert");
+	m_phongShader.loadShader(aie::eShaderStage::FRAGMENT, "./shaders/normalmap.frag");
 
 	if (m_phongShader.link() == false) {
 		printf("Shader Error: %s\n", m_phongShader.getLastError());
 		return false;
 	}
+	
 
-	m_quadMesh.initialiseFromFile("../models/Owls.obj");
-	m_quadMesh.loadMaterial("../models/Buddha.mtl");
-	//m_quadMesh.initialiseQuad();	
+
+	m_light.direction = glm::normalize(vec3(-1));
+	m_light.colour = { 1,1,1 };
+	m_ambientLight = { 0.25f, 0.25f, 0.25f };
+
+	// create a 2x2 black-n-white checker texture
+	// RED simply means one colour channel, i.e. grayscale
+	unsigned char texelData[4] = { 0, 255, 255, 0 };
+	m_gridTexture.create(2, 2, aie::Texture::RED, texelData);
+	
+	//m_altTexture.load("./models/soulspear/soulspear.mtl");
+
+	//m_quadMesh.initialiseQuad();
+
+	m_altMesh.initialiseFromFile("../models/soulspear/soulspear.obj");
+	m_altMesh.loadMaterial("../models/soulspear/soulspear.mtl");
+
+	//m_quadMesh.loadMaterial("../models/BasicMatRender.mtl");
+
+	m_altTransform = {
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	};
 
     // make the quad 10 units wide
     m_quadTransform = {
@@ -77,13 +92,11 @@ bool Application3D::startup() {
           0,0,1,0,
           0,0,0,1 };
 
-	m_light.colour = { 1,1,1 };
-	m_ambientLight = { 0.25f, 0.25f, 0.25f };
+
 
 
     return true;
 }
-
 
 bool Application3D::update() {
 
@@ -113,13 +126,6 @@ void Application3D::draw()
 
 	glm::mat4 pv = m_camera.getProjectionMatrix(getWindowWidth(), getWindowHeight()) * m_camera.getViewMatrix();
 
-	//m_shader.bind();
-
-	//// bind transform
-	//auto pvm = pv * m_quadTransform;
-	//m_shader.bindUniform("ProjectionViewModel", pvm);
-
-
 
 	// bind shader
 	m_phongShader.bind();
@@ -128,6 +134,7 @@ void Application3D::draw()
 	m_phongShader.bindUniform("AmbientColour", m_ambientLight);
 	m_phongShader.bindUniform("LightColour", m_light.colour);
 	m_phongShader.bindUniform("LightDirection", m_light.direction);
+
 
 	m_phongShader.bindUniform("cameraPosition", vec3(glm::inverse(m_camera.getViewMatrix())[3]));
 	
@@ -138,10 +145,17 @@ void Application3D::draw()
 	// bind transforms for lighting
 	m_phongShader.bindUniform("ModelMatrix", m_quadTransform);
 
-	m_quadMesh.applyMaterial(&m_phongShader);
+	m_altMesh.applyMaterial(&m_phongShader);
 
-	// draw quad
-	m_quadMesh.draw();
+
+	m_altMesh.draw();
+
+	//m_gridTexture.bind(0);
+	//m_phongShader.bindUniform("diffuseTex", 0);
+
+	//m_quadMesh.draw();
+
+
 
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
@@ -171,3 +185,21 @@ void Application3D::shutdown() {
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
 }
+
+/*
+First, we need to transform the normal texture’s RGB out of a 0 to 1 range and into a -1 to 1 range.
+This is quite simple, we just multiply the value by 2 (which puts it into a 0 to 2 range) then subtract 1
+(which shifts it from a 0 to 2 range to instead be a -1 to 1 range).
+Once it is in the correct range we need to transform it by the Tangent Basis Matrix we had previously
+calculated, the TBN mat3. We can then replace the normal N with this transformed normal and use
+it in all of our lighting calculations to implement normal mapping.
+It can be hard to tell that the lighting has done anything, depending on the model, but we can
+definitely see the difference if instead of using the texture or material colour in the output we simply
+output the lambert term used when multiplying the diffuse colour.
+
+*/
+
+
+
+
+

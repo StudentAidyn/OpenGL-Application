@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "Texture.h"
+#include <vector>
 
 namespace aie { class ShaderProgram; }
 
@@ -16,6 +18,7 @@ public:
 		glm::vec4 position;
 		glm::vec4 normal;
 		glm::vec2 texCoord;
+		glm::vec4 tangent;
 	};
 
 	// mesh initializer
@@ -33,6 +36,8 @@ public:
 
 	void applyMaterial(aie::ShaderProgram* shader);
 
+	void calculateTangents(Vertex* vertices, unsigned int vertexCount, const std::vector<unsigned int>& indices);
+
 protected:
 	// total tris being created
 	unsigned int triCount;
@@ -46,6 +51,9 @@ protected:
 	glm::vec3 Ks; // specular colour of the surface
 	float specularPower; // tightness of specular highlights
 
+	aie::Texture mapKd; // diffuse texture map
+	aie::Texture mapKs; // specular texture map
+	aie::Texture mapBump; // normal map
 };
 
 
