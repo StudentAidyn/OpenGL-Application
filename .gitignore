@@ -105,7 +105,8 @@ StyleCopReport.xml
 *.scc
 
 #Keep these files
-!GraphicsApplication/models/*.obj
+!GraphicsApplication/models/**/*.obj 
+//keeps any .obj files within models file
 
 # Chutzpah Test files
 _Chutzpah*
