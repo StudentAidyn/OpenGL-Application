@@ -32,13 +32,5 @@ protected:
     aie::Texture m_altTexture;
     Mesh m_altMesh;
     glm::mat4 m_altTransform;
-
-    struct Light {
-        glm::vec3 direction;
-        glm::vec3 colour;
-    };
-
-    Light m_light;
-    glm::vec3 m_ambientLight;
 };
 

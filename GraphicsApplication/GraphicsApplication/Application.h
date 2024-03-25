@@ -67,6 +67,14 @@ protected:
     /// the last position of the mouse, us set at the end of the update call
     glm::vec2 m_lastMousePosition;
 
+    struct Light {
+        glm::vec3 direction;
+        glm::vec3 colour;
+    };
+
+    Light m_light;
+    glm::vec3 m_ambientLight;
+
     /// camera reference
     Camera m_camera;
 };
