@@ -32,5 +32,7 @@ protected:
     aie::Texture m_altTexture;
     Mesh m_altMesh;
     glm::mat4 m_altTransform;
+
+    Scene* m_scene;
 };
 

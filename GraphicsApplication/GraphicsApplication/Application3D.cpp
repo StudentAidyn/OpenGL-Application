@@ -1,6 +1,7 @@
 #include "glad.h"
 #include "Application3D.h"
 #include "imgui_glfw3.h"
+#include "Instance.h"
 
 Application* Application::s_instance = nullptr;
 
@@ -57,41 +58,31 @@ bool Application3D::startup() {
 		printf("Shader Error: %s\n", m_phongShader.getLastError());
 		return false;
 	}
-	
 
-
-	m_light.direction = glm::normalize(vec3(-1));
-	m_light.colour = { 1,1,1 };
-	m_ambientLight = { 0.25f, 0.25f, 0.25f };
-
-	// create a 2x2 black-n-white checker texture
-	// RED simply means one colour channel, i.e. grayscale
-	unsigned char texelData[4] = { 0, 255, 255, 0 };
-	m_gridTexture.create(2, 2, aie::Texture::RED, texelData);
-	
-	//m_altTexture.load("./models/soulspear/soulspear.mtl");
-
-	//m_quadMesh.initialiseQuad();
 
 	m_altMesh.initialiseFromFile("../models/soulspear/soulspear.obj");
 	m_altMesh.loadMaterial("../models/soulspear/soulspear.mtl");
 
-	//m_quadMesh.loadMaterial("../models/BasicMatRender.mtl");
-
-	m_altTransform = {
+	glm::mat4 altTransform = {
 		1,0,0,0,
 		0,1,0,0,
 		0,0,1,0,
 		0,0,0,1
 	};
 
-    // make the quad 10 units wide
-    m_quadTransform = {
-          1,0,0,0,
-          0,1,0,0,
-          0,0,1,0,
-          0,0,0,1 };
 
+
+	m_light.colour = { 1,1,1 };
+	m_light.direction = vec3(1, -1, 1);
+	// remove ambient light
+
+	m_scene = new Scene(&m_camera, glm::vec2(getWindowWidth(), getWindowHeight()), m_light, glm::vec3(0.25f, 0.25f, 0.25f));
+	m_scene->AddInstance(new Instance(altTransform, &m_altMesh, &m_phongShader));
+
+	// red light on the left
+	m_scene->getPointLights().push_back(Light(vec3(5, 3, 0), vec3(1, 0, 0), 50));
+	// green light on the right
+	m_scene->getPointLights().push_back(Light(vec3(-5, 3, 0), vec3(0, 1, 0), 50));
 
 
 
@@ -104,7 +95,9 @@ bool Application3D::update() {
 
 	ImGui::Begin("Light Settings");
 	ImGui::DragFloat3("Sunlight Direction", &m_light.direction[0], 0.1f, -1.0f, 1.0f);
-	ImGui::DragFloat3("Sunlight Colour", &m_light.colour[0], 0.1f, 0.0f, 2.0f);
+	m_scene->setLightDirection(m_light.direction);
+	ImGui::DragFloat3("Sunlight Colour", & m_light.colour[0], 0.1f, 0.0f, 2.0f);
+	m_scene->setLightColour(m_light.colour);
 	ImGui::End();
 	
 	m_camera.update(0.1f, m_window); // delta time, current window
@@ -122,40 +115,9 @@ void Application3D::draw()
 
 	Gizmos::addTransform(glm::mat4(1));
 
-
-
 	glm::mat4 pv = m_camera.getProjectionMatrix(getWindowWidth(), getWindowHeight()) * m_camera.getViewMatrix();
 
-
-	// bind shader
-	m_phongShader.bind();
-
-	// bind light
-	m_phongShader.bindUniform("AmbientColour", m_ambientLight);
-	m_phongShader.bindUniform("LightColour", m_light.colour);
-	m_phongShader.bindUniform("LightDirection", m_light.direction);
-
-
-	m_phongShader.bindUniform("cameraPosition", vec3(glm::inverse(m_camera.getViewMatrix())[3]));
-	
-	// bind transform
-	auto pvm = pv * m_quadTransform;
-	m_phongShader.bindUniform("ProjectionViewModel", pvm);
-
-	// bind transforms for lighting
-	m_phongShader.bindUniform("ModelMatrix", m_quadTransform);
-
-	m_altMesh.applyMaterial(&m_phongShader);
-
-
-	m_altMesh.draw();
-
-	//m_gridTexture.bind(0);
-	//m_phongShader.bindUniform("diffuseTex", 0);
-
-	//m_quadMesh.draw();
-
-
+	m_scene->draw();
 
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
@@ -184,20 +146,12 @@ void Application3D::shutdown() {
 	Gizmos::destroy();
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
+	// deleting the scene
+	delete m_scene;
+	m_scene = nullptr;
 }
 
-/*
-First, we need to transform the normal texture’s RGB out of a 0 to 1 range and into a -1 to 1 range.
-This is quite simple, we just multiply the value by 2 (which puts it into a 0 to 2 range) then subtract 1
-(which shifts it from a 0 to 2 range to instead be a -1 to 1 range).
-Once it is in the correct range we need to transform it by the Tangent Basis Matrix we had previously
-calculated, the TBN mat3. We can then replace the normal N with this transformed normal and use
-it in all of our lighting calculations to implement normal mapping.
-It can be hard to tell that the lighting has done anything, depending on the model, but we can
-definitely see the difference if instead of using the texture or material colour in the output we simply
-output the lambert term used when multiplying the diffuse colour.
 
-*/
 
 
 

@@ -10,6 +10,7 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Scene.h"
 
 using glm::vec3;
 using glm::vec4;
@@ -45,6 +46,8 @@ public:
     /// Set up mouse input
     static void SetMousePosition(GLFWwindow* window, double x, double y);
 
+
+
 protected:
     /// Singleton instance of the Application Class
     static Application* s_instance;
@@ -66,11 +69,6 @@ protected:
     glm::vec2 m_mousePosition;
     /// the last position of the mouse, us set at the end of the update call
     glm::vec2 m_lastMousePosition;
-
-    struct Light {
-        glm::vec3 direction;
-        glm::vec3 colour;
-    };
 
     Light m_light;
     glm::vec3 m_ambientLight;
