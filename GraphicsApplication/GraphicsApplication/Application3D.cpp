@@ -60,8 +60,8 @@ bool Application3D::startup() {
 	}
 
 
-	m_altMesh.initialiseFromFile("../models/soulspear/soulspear.obj");
-	m_altMesh.loadMaterial("../models/soulspear/soulspear.mtl");
+	m_altMesh.initialiseFromFile("./models/soulspear/soulspear.obj");
+	m_altMesh.loadMaterial("./models/soulspear/soulspear.mtl");
 
 	glm::mat4 altTransform = {
 		1,0,0,0,
